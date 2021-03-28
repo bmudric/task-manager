@@ -5,6 +5,10 @@ import com.jazavac.taskmanager.internal.implementation.PriorityTaskManager
 import com.jazavac.taskmanager.internal.implementation.SimpleTaskManager
 import kotlin.reflect.KClass
 
+/**
+ * Enumeration of available [TaskManager] implementations.
+ * See [TaskManagerType.description] value for behavior description.
+ */
 enum class TaskManagerType(val description: String, val implementation: KClass<out TaskManager>) {
     SIMPLE("When capacity is full, adding a new process fails.", SimpleTaskManager::class),
     FIFO("When capacity is full, adding a new process replaces the oldest one.", FifoTaskManager::class),
