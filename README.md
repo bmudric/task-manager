@@ -40,3 +40,22 @@ Model one or more methods capable of:
 1. killing a specific process
 2. killing all processes with a specific priority
 3. killing all running processes
+
+## Out of scope
+
+As this is an exercise in clean coding, the following is not covered for the sake of simplicity / time consumption:
+
+* Process stream handling
+* Setting OS specific process priority
+* Various process creation and execution issues that can arise and be handled on the fly
+* Interpreter configuration, '/bin/bash' is hardcoded
+* Execution directory configuration, '/tmp' is hardcoded
+* Logging
+* Security
+* Command line tools or wrapping service that would enable usage / integration of the library
+
+## Running the tests
+
+```shell
+./gradlew clean test
+```
