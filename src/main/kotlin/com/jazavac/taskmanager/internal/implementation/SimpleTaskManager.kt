@@ -7,16 +7,20 @@ import java.time.Instant
 
 class SimpleTaskManager(override val capacity: Int) : TaskManager {
 
-    private var processes: Map<Long, Process>
+    internal var processes: Map<Long, Process>
 
     init {
-        this.processes = HashMap()
+        this.processes = newBackingMap()
+    }
+
+    private fun newBackingMap(): Map<Long, Process> {
+        return HashMap()
     }
 
     @Synchronized
     override fun add(command: String, priority: Priority): Long {
         filterOutDeadProcesses()
-        if (processes.size >= capacity) {
+        if (this.processes.size >= this.capacity) {
             return NO_PROCESS
         }
         val newOsProcess = ProcessBuilderAdapter.createProcess(command)
@@ -26,21 +30,34 @@ class SimpleTaskManager(override val capacity: Int) : TaskManager {
         return id
     }
 
+    @Synchronized
     override fun list(order: SortOrder): List<Process> {
         filterOutDeadProcesses()
         return this.processes.values.sortedWith(comparator(order))
     }
 
-    override fun kill(identifier: Int): Int {
-        TODO("Not yet implemented")
+    @Synchronized
+    override fun kill(identifier: Long): Int {
+        val toKill = this.processes[identifier] ?: return 0
+        ProcessBuilderAdapter.killProcess(toKill.osProcess)
+        this.processes = this.processes.minus(identifier)
+        return 1
     }
 
+    @Synchronized
     override fun killGroup(priority: Priority): Int {
-        TODO("Not yet implemented")
+        val toKill = this.processes.filterValues { it.priority == priority }
+        toKill.values.forEach { ProcessBuilderAdapter.killProcess(it.osProcess) }
+        this.processes = this.processes.minus(toKill.keys)
+        return toKill.size
     }
 
+    @Synchronized
     override fun killAll(): Int {
-        TODO("Not yet implemented")
+        val killingCount = this.processes.size
+        this.processes.values.forEach { ProcessBuilderAdapter.killProcess(it.osProcess) }
+        this.processes = newBackingMap()
+        return killingCount
     }
 
     private fun filterOutDeadProcesses() {

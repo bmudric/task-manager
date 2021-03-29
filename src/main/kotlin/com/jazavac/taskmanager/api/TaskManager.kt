@@ -42,7 +42,7 @@ interface TaskManager {
      * @param identifier the id of the process to kill
      * @return the number of processes killed, 1 if the process id was found, otherwise 0
      */
-    fun kill(identifier: Int): Int
+    fun kill(identifier: Long): Int
 
     /**
      * Kill all the managed processes of the desired [Priority]

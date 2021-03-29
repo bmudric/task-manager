@@ -16,7 +16,7 @@ class FifoTaskManager(override val capacity: Int) : TaskManager {
         TODO("Not yet implemented")
     }
 
-    override fun kill(identifier: Int): Int {
+    override fun kill(identifier: Long): Int {
         TODO("Not yet implemented")
     }
 
