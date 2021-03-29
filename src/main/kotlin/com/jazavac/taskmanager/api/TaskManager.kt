@@ -35,7 +35,7 @@ interface TaskManager {
      * @param order the desired sorting order, see [SortOrder.description] for details
      * @return the list of currently managed processes
      */
-    fun list(order: SortOrder): List<Process>
+    fun list(order: SortOrder = SortOrder.ID): List<Process>
 
     /**
      * Kill a single process.

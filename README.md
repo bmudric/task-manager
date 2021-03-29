@@ -62,3 +62,21 @@ As this is an exercise in clean coding, the following is not covered for the sak
 ```shell
 ./gradlew clean test
 ```
+
+## Usage
+
+```kotlin
+// create a manager instance, choose type and process capacity
+val myManager = TaskManager.new(TaskManagerType.SIMPLE, 10)
+// run your command and get the PID reference
+val identifier = taskManager.add("echo 'I'm a process!'", Priority.HIGH)
+// get a list of running processes, sorted by desired order
+val myProcesses = taskManager.list(SortOrder.ID)
+// kill a specific process
+val killedSingleCount = taskManager.kill(identifier)
+// ...or a group by Priority
+val killedGroupCount = taskManager.killGroup(Priority.MEDIUM)
+// ...or all managed processes
+val killedAllCount = taskManager.killAll()
+```
+For more info, check out the Kotlin documentation.
