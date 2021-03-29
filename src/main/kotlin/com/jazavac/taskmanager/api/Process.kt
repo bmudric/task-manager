@@ -12,6 +12,9 @@ class Process(
     internal val osProcess: java.lang.Process,
     internal val creationTime: Instant
 ) {
+    override fun toString(): String {
+        return "${this.identifier}_${this.priority}"
+    }
 
     companion object {
         /**
@@ -36,5 +39,6 @@ class Process(
         private val idComparator = compareBy<Process> { it.identifier }
         private val priorityComparator = compareByDescending<Process> { it.priority }.thenBy(idComparator) { it }
         private val creationTimeComparator = compareBy<Process> { it.creationTime }
+        internal val leastPriorityComparator = compareBy<Process> { it.priority }.thenBy(creationTimeComparator) { it }
     }
 }

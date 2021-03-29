@@ -1,6 +1,7 @@
 package com.jazavac.taskmanager.api
 
 import com.jazavac.taskmanager.api.Process.Companion.comparator
+import com.jazavac.taskmanager.api.Process.Companion.leastPriorityComparator
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.collections.shouldExistInOrder
 import io.mockk.mockk
@@ -12,6 +13,7 @@ class ProcessTest : ShouldSpec({
         val unsorted = listOf(
             Process(2, Priority.MEDIUM, mockk(), Instant.now().minusSeconds(15)),
             Process(1, Priority.MEDIUM, mockk(), Instant.now().minusSeconds(5)),
+            Process(5, Priority.MEDIUM, mockk(), Instant.now().minusSeconds(20)),
             Process(4, Priority.HIGH, mockk(), Instant.now()),
             Process(3, Priority.LOW, mockk(), Instant.now().minusSeconds(10))
         )
@@ -22,7 +24,8 @@ class ProcessTest : ShouldSpec({
                     { it.identifier == 1L },
                     { it.identifier == 2L },
                     { it.identifier == 3L },
-                    { it.identifier == 4L })
+                    { it.identifier == 4L },
+                    { it.identifier == 5L })
             }
         }
         context("by priority") {
@@ -32,6 +35,7 @@ class ProcessTest : ShouldSpec({
                     { it.identifier == 4L },
                     { it.identifier == 1L },
                     { it.identifier == 2L },
+                    { it.identifier == 5L },
                     { it.identifier == 3L })
             }
         }
@@ -39,8 +43,21 @@ class ProcessTest : ShouldSpec({
             should("return a collection sorted by creation time (ascending)") {
                 val sorted = unsorted.sortedWith(comparator(SortOrder.CREATION_TIME))
                 sorted shouldExistInOrder listOf(
+                    { it.identifier == 5L },
                     { it.identifier == 2L },
                     { it.identifier == 3L },
+                    { it.identifier == 1L },
+                    { it.identifier == 4L })
+            }
+        }
+        context("by least priority") {
+            should("return a collection sorted by priority (ascending), then creation time (ascending)") {
+                val sorted = unsorted.sortedWith(leastPriorityComparator)
+                println(sorted)
+                sorted shouldExistInOrder listOf(
+                    { it.identifier == 3L },
+                    { it.identifier == 5L },
+                    { it.identifier == 2L },
                     { it.identifier == 1L },
                     { it.identifier == 4L })
             }

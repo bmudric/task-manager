@@ -1,43 +1,46 @@
 package com.jazavac.taskmanager.internal.implementation
 
+import com.jazavac.taskmanager.api.NO_PROCESS
 import com.jazavac.taskmanager.api.Priority
 import com.jazavac.taskmanager.api.TaskManager
 import com.jazavac.taskmanager.api.TaskManagerType
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.ints.shouldBeExactly
-import io.kotest.matchers.shouldBe
+import io.kotest.matchers.longs.shouldBeExactly
 import io.kotest.matchers.shouldNotBe
 
 @Suppress("BlockingMethodInNonBlockingContext")
-class FifoTaskManagerTest : ShouldSpec({
+class PriorityTaskManagerTest : ShouldSpec({
 
-    context("adding a new process in an empty FifoTaskManager") {
-        val taskManager = FifoTaskManager(2)
-        val id1 = taskManager.add("sleep 1")
-        val process1 = taskManager.processQueue.find { it.identifier == id1 }
-        should("have started the process") {
-            process1 shouldNotBe null
-            process1!!.osProcess.isAlive shouldBe true
+    context("adding a new process in a PriorityTaskManager") {
+        val taskManager = PriorityTaskManager(4)
+        taskManager.add("sleep 1", Priority.HIGH)
+        val m1 = taskManager.add("sleep 1", Priority.MEDIUM)
+        taskManager.add("sleep 1", Priority.HIGH)
+        should("add all candidates up to capacity") {
+            taskManager.processQueue.size shouldBeExactly 3
+            taskManager.processQueue.peek().identifier shouldBeExactly m1
         }
-        context("adding more processes") {
-            taskManager.add("sleep 1")
-            taskManager.add("sleep 1")
-            should("observe capacity") {
-                taskManager.processQueue.size shouldBeExactly taskManager.capacity
-            }
-            should("have removed the oldest one when capacity reached") {
-                taskManager.processQueue.contains(process1) shouldBe false
-            }
-            should("have killed the oldest process") {
-                process1!!.osProcess.isAlive shouldBe false
-            }
+        val l1 = taskManager.add("sleep 1", Priority.LOW)
+        should("have the lowest priority element at the head") {
+            taskManager.processQueue.peek().identifier shouldBeExactly l1
+        }
+        taskManager.add("sleep 1")
+        should("result in popping the lowest priority out when higher is added") {
+            taskManager.processQueue.peek().identifier shouldBeExactly m1
+        }
+        taskManager.add("sleep 1", Priority.HIGH)
+        taskManager.add("sleep 1", Priority.HIGH)
+        val hOverCapacity = taskManager.add("sleep 1", Priority.HIGH)
+        should("not add any more max priority processes once full") {
+            hOverCapacity shouldBeExactly NO_PROCESS
         }
     }
 
     context("listing processes") {
         should("return only active processes").config(invocations = 10) {
-            val taskManager = TaskManager.new(TaskManagerType.FIFO, 10)
+            val taskManager = TaskManager.new(TaskManagerType.PRIORITY, 10)
             taskManager.add("echo -n")
             taskManager.add("echo -n")
             Thread.sleep(10)
@@ -48,7 +51,7 @@ class FifoTaskManagerTest : ShouldSpec({
     }
 
     context("killing a single process") {
-        val taskManager = FifoTaskManager(10)
+        val taskManager = PriorityTaskManager(10)
         val id = taskManager.add("sleep 1")
         should("remove the process and return 1") {
             taskManager.kill(id) shouldBeExactly 1
@@ -62,7 +65,7 @@ class FifoTaskManagerTest : ShouldSpec({
     }
 
     context("killing all processes") {
-        val taskManager = FifoTaskManager(5)
+        val taskManager = PriorityTaskManager(5)
         val createCount = taskManager.capacity * 2
         for (i in 1..createCount) {
             taskManager.add("sleep 1")
@@ -77,7 +80,7 @@ class FifoTaskManagerTest : ShouldSpec({
     }
 
     context("killing processes by priority") {
-        val taskManager = FifoTaskManager(10)
+        val taskManager = PriorityTaskManager(10)
         taskManager.add("sleep 1", Priority.MEDIUM)
         taskManager.add("sleep 1", Priority.HIGH)
         taskManager.add("sleep 1", Priority.MEDIUM)

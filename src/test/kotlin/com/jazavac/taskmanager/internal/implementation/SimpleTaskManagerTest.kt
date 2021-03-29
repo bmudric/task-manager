@@ -1,6 +1,9 @@
 package com.jazavac.taskmanager.internal.implementation
 
-import com.jazavac.taskmanager.api.*
+import com.jazavac.taskmanager.api.NO_PROCESS
+import com.jazavac.taskmanager.api.Priority
+import com.jazavac.taskmanager.api.TaskManager
+import com.jazavac.taskmanager.api.TaskManagerType
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.longs.shouldBeGreaterThan
