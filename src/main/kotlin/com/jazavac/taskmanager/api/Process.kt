@@ -1,5 +1,6 @@
 package com.jazavac.taskmanager.api
 
+import com.jazavac.taskmanager.internal.process.ProcessBuilderAdapter
 import java.time.Instant
 
 /**
@@ -13,6 +14,17 @@ class Process(
 ) {
 
     companion object {
+        /**
+         * Convenience method for creating a new process.
+         * @param command the command to run
+         * @param priority the priority of the new process
+         * @return newly created process
+         */
+        internal fun new(command: String, priority: Priority): Process {
+            val newOsProcess = ProcessBuilderAdapter.createProcess(command)
+            return Process(newOsProcess.pid(), priority, newOsProcess, Instant.now())
+        }
+
         fun comparator(order: SortOrder): Comparator<Process> {
             return when (order) {
                 SortOrder.ID -> idComparator

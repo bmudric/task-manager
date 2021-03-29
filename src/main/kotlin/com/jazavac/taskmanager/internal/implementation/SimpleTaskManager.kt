@@ -3,7 +3,6 @@ package com.jazavac.taskmanager.internal.implementation
 import com.jazavac.taskmanager.api.*
 import com.jazavac.taskmanager.api.Process.Companion.comparator
 import com.jazavac.taskmanager.internal.process.ProcessBuilderAdapter
-import java.time.Instant
 
 class SimpleTaskManager(override val capacity: Int) : TaskManager {
 
@@ -23,11 +22,9 @@ class SimpleTaskManager(override val capacity: Int) : TaskManager {
         if (this.processes.size >= this.capacity) {
             return NO_PROCESS
         }
-        val newOsProcess = ProcessBuilderAdapter.createProcess(command)
-        val id = newOsProcess.pid()
-        val newProcess = Process(id, priority, newOsProcess, Instant.now())
-        this.processes = this.processes + Pair(id, newProcess)
-        return id
+        val newProcess = Process.new(command, priority)
+        this.processes = this.processes + Pair(newProcess.identifier, newProcess)
+        return newProcess.identifier
     }
 
     @Synchronized

@@ -79,4 +79,5 @@ val killedGroupCount = taskManager.killGroup(Priority.MEDIUM)
 // ...or all managed processes
 val killedAllCount = taskManager.killAll()
 ```
+
 For more info, check out the Kotlin documentation.

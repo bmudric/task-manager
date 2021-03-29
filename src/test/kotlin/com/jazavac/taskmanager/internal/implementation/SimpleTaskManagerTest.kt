@@ -1,7 +1,6 @@
 package com.jazavac.taskmanager.internal.implementation
 
 import com.jazavac.taskmanager.api.*
-import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.longs.shouldBeGreaterThan
@@ -18,19 +17,17 @@ import java.util.concurrent.atomic.AtomicInteger
 class SimpleTaskManagerTest : ShouldSpec({
 
     context("adding a new process in an empty SimpleTaskManager") {
-        shouldNotThrowAny {
-            val taskManager = SimpleTaskManager(1)
-            should("return a PID") {
-                val identifier = taskManager.add("sleep 1")
-                identifier shouldNotBeExactly NO_PROCESS
-                identifier shouldBeGreaterThan 0
-                taskManager.processes.size shouldBeExactly 1
-            }
-            context("adding a process over capacity") {
-                should("return $NO_PROCESS") {
-                    val failId = taskManager.add("echo over capacity")
-                    failId shouldBe NO_PROCESS
-                }
+        val taskManager = SimpleTaskManager(1)
+        should("return a PID") {
+            val identifier = taskManager.add("sleep 1")
+            identifier shouldNotBeExactly NO_PROCESS
+            identifier shouldBeGreaterThan 0
+            taskManager.processes.size shouldBeExactly 1
+        }
+        context("adding a process over capacity") {
+            should("return $NO_PROCESS") {
+                val failId = taskManager.add("echo over capacity")
+                failId shouldBe NO_PROCESS
             }
         }
     }
@@ -65,7 +62,7 @@ class SimpleTaskManagerTest : ShouldSpec({
             taskManager.add("echo -n")
             Thread.sleep(10)
             taskManager.add("sleep 1")
-            val list = taskManager.list(SortOrder.ID)
+            val list = taskManager.list()
             list.size shouldBeExactly 1
         }
     }
@@ -88,7 +85,7 @@ class SimpleTaskManagerTest : ShouldSpec({
         val taskManager = SimpleTaskManager(10)
         val createCount = 3
         for (i in 1..createCount) {
-            taskManager.add("echo -n")
+            taskManager.add("sleep 1")
         }
         val killCount = taskManager.killAll()
         should("return the total count of previously tracked processes") {
