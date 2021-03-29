@@ -5,9 +5,10 @@ import com.jazavac.taskmanager.api.Process
 import com.jazavac.taskmanager.api.SortOrder
 import com.jazavac.taskmanager.api.TaskManager
 
-class PriorityTaskManager(override val capacity: Int): TaskManager {
+class PriorityTaskManager(override val capacity: Int) : TaskManager {
 
-    override fun add(command: String, priority: Priority): Int {
+    @Synchronized
+    override fun add(command: String, priority: Priority): Long {
         TODO("Not yet implemented")
     }
 

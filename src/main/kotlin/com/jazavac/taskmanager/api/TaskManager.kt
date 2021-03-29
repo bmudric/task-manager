@@ -4,6 +4,11 @@ import com.jazavac.taskmanager.api.TaskManager.Companion.new
 import kotlin.reflect.full.primaryConstructor
 
 /**
+ * Constant describing the fact that no process was added.
+ */
+const val NO_PROCESS = -1L
+
+/**
  * Component for handling OS processes.
  *
  * Usage: create a new instance using the [new] function.
@@ -16,11 +21,14 @@ interface TaskManager {
     /**
      * Create a new process running the desired command.
      * Adding behavior depends on the chosen implementation, for more details see [TaskManagerType].
+     *
+     * NOTE: The add method uses simple synchronization to ensure observing manager capacity in the adding process.
      * @param command the command to run, e.g. "echo 'I'm a teapot'"
      * @param priority the desired process priority that will affect deletion of processes at manager capacity,
      * subject to chosen implementation
+     * @return the PID of the created process, otherwise [NO_PROCESS]
      */
-    fun add(command: String, priority: Priority = Priority.MEDIUM): Int
+    fun add(command: String, priority: Priority = Priority.MEDIUM): Long
 
     /**
      * List the processes managed by this [TaskManager] instance.

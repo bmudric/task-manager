@@ -54,6 +54,7 @@ As this is an exercise in clean coding, the following is not covered for the sak
 * Security
 * Command line tools or wrapping service that would enable usage / integration of the library
 * Process termination feedback mechanism, such as the CompletableFuture in the underlying Java implementation
+* Terminating long-running processes after TaskManager shut down
 
 ## Running the tests
 
